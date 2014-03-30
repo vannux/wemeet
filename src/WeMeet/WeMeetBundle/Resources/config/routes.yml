@@ -1,0 +1,5 @@
+we_meet_we_meet_User:
+    type: rest
+    prefix: /v1
+    resource: "@WeMeetWeMeetBundle/Controller/UserController.php"
+    name_prefix:  api_1_
