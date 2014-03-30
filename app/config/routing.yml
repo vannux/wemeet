@@ -1,0 +1,9 @@
+we_meet_we_meet:
+    resource: "@WeMeetWeMeetBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+we_meet_we_meet:
+    type: rest
+    prefix: /api
+    resource: "@WeMeetWeMeetBundle/Resources/config/routes.yml"
