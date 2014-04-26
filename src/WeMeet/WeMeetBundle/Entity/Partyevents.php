@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="partyevents", indexes={@ORM\Index(name="FK_COUNTRY_CODE_idx", columns={"country"}), @ORM\Index(name="FK_CREATION_USER_idx", columns={"createdBy"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class Partyevents
 {
@@ -422,5 +423,15 @@ class Partyevents
     public function getUser()
     {
         return $this->user;
+    }
+    
+    /**
+     * @ORM\PrePersist
+     */
+    public function setValues()
+    {
+    	if (!$this->creationdate) {
+    		$this->creationdate = new \DateTime();
+    	}
     }
 }
