@@ -25,12 +25,17 @@ class PartyController extends WeMeetController {
 	}
 	/**
 	 * @Rest\View()
+	 * @param string $apikey
 	 * @return array
 	 */
-	public function getPartyAllAction()
+	public function getPartyAllAction($apikey)
 	{
 		$logger = $this->get('logger');
 		$logger->info('getPartyAllAction chiamata');
+		$logger->info('getPartyAllAction: apikey ' . $apikey);
+		
+		$user = $this->userGet($apikey);
+		
 		$parties = $this->container->get('doctrine.orm.entity_manager')->getRepository('WeMeetWeMeetBundle:Partyevents')->findAll();
 		return $parties;
 	}
@@ -42,7 +47,7 @@ class PartyController extends WeMeetController {
 	public function putPartyAction($apikey)
 	{
 		$logger = $this->get('logger');
-		$logger->info('putPartyAction: apikey' . $apikey);
+		$logger->info('putPartyAction: apikey ' . $apikey);
 	
 		$user = $this->userGet($apikey);
 	
@@ -50,11 +55,13 @@ class PartyController extends WeMeetController {
 	
 		$doctrineManager = $this->container->get('doctrine.orm.entity_manager');
 		
+		$logger->info('putPartyAction: eventdate ' . str_replace('\\/', '/', $json->{'eventdate'}));
+		
 		$party = new Partyevents();
 		$party->setCreatedBy($user);
 		$party->setName($json->{'name'});
 		$party->setDescription($json->{'description'});
-		$party->setEventdate(new \DateTime($json->{'eventdate'}));
+		$party->setEventdate(new \DateTime(str_replace('\\/', '/', $json->{'eventdate'})));
 		$party->setCity($json->{'city'});
 		$party->setLocation($json->{'location'});
 		$party->setGeolat($json->{'geolat'});
