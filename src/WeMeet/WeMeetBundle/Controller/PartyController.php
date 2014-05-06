@@ -15,12 +15,21 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class PartyController extends WeMeetController {
 	/**
 	 * @Rest\View()
-	 * @param Partyevents $id
+	 * @param string $apikey
 	 * @return array
 	 */
-	public function getPartyAction($id)
+	public function postPartyAction($apikey)
 	{
-		$party = $this->container->get('doctrine.orm.entity_manager')->getRepository('WeMeetWeMeetBundle:Partyevents')->find($id);
+		$logger = $this->get('logger');
+		$logger->info('getPartyAction chiamata');
+		$logger->info('getPartyAction: apikey ' . $apikey);
+		
+		$user = $this->userGet($apikey);
+		$json = $this->decodeJSONPayload();
+		
+		$logger->info('getPartyAction: id ' . $json->{'id'});
+		
+		$party = $this->container->get('doctrine.orm.entity_manager')->getRepository('WeMeetWeMeetBundle:Partyevents')->find($json->{'id'});
 		return array($party);
 	}
 	/**
@@ -55,9 +64,16 @@ class PartyController extends WeMeetController {
 	
 		$doctrineManager = $this->container->get('doctrine.orm.entity_manager');
 		
-		$logger->info('putPartyAction: eventdate ' . str_replace('\\/', '/', $json->{'eventdate'}));
+		$id = $json->{'id'};
+		$logger->info('putPartyAction: id ' . $id);
+		if ($id != '') {
+			$logger->info('putPartyAction: getting party with id ' . $id );
+			$party = $this->container->get('doctrine.orm.entity_manager')->getRepository('WeMeetWeMeetBundle:Partyevents')->find($json->{'id'});
+		} else {
+			$logger->info('putPartyAction: creating new party');
+			$party = new Partyevents();
+		}
 		
-		$party = new Partyevents();
 		$party->setCreatedBy($user);
 		$party->setName($json->{'name'});
 		$party->setDescription($json->{'description'});
